@@ -104,6 +104,23 @@ class DagsterDbtTranslator:
 
         return self._settings
 
+    @public
+    def get_manifest_version(self, manifest: Mapping[str, Any]) -> int | None:
+        """Return the dbt manifest schema version as an integer.
+
+        Reads the ``version`` field from the manifest metadata. This is useful for
+        downstream code that needs to handle schema differences between dbt versions.
+
+        Args:
+            manifest (Mapping[str, Any]): The parsed manifest of the dbt project.
+
+        Returns:
+            Optional[int]: The manifest schema version, or None if the version field
+            is not present.
+        """
+        version = manifest.get("metadata", {}).get("version")
+        return int(version) if version is not None else None
+
     def get_resource_props(self, manifest: Mapping[str, Any], unique_id: str) -> Mapping[str, Any]:
         """Given a parsed manifest and a dbt unique_id, returns the dictionary of properties
         for the corresponding dbt resource (e.g. model, seed, snapshot, source) as defined
