@@ -1,0 +1,20 @@
+---
+description: Hard requirements when adding or changing a top-level public Python API
+globs: python_modules/**/__init__.py,python_modules/dagster/dagster/**/*.py,python_modules/libraries/**/*.py,python_modules/dagster-pipes/**/*.py
+alwaysApply: false
+---
+
+# Public API exports
+
+A symbol is public only if it is re-exported from the package root `__init__.py` (`dagster`, `dagster_pipes`, or a `dagster_*` library). Underscore modules (`dagster._…`) are private — do not export from them unless intentional.
+
+For a new top-level public class/function, all of these are required:
+
+1. `@public` on the definition (`from dagster._annotations import public`)
+2. Root export as `from …defining_module… import X as X` (not via an intermediate re-export; no new `__all__` in subpackages)
+3. Matching Sphinx RST entry (see sphinx-api-docs)
+4. Tests under the package `*_tests/` tree for behavioral changes
+
+For a new user-facing method/property on an already-public class: `@public` + docstring. Put `@public` above `@property`. No new root export or RST entry — autodoc picks up `@public` members.
+
+Do not add symbols to root `__init__.py` “just in case.” Do not grow `automation/dagster_docs/exclude_lists.py` to silence validators.

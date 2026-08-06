@@ -1,0 +1,16 @@
+---
+description: Required API lifecycle decorator names — reject @experimental and incomplete deprecations
+globs: python_modules/dagster/dagster/**/*.py,python_modules/libraries/**/*.py,python_modules/dagster-pipes/**/*.py
+alwaysApply: false
+---
+
+# API stability annotations
+
+Import from `dagster._annotations`. **`@experimental` does not exist** — use `@preview` or `@beta`.
+
+| Decorator | Reject if missing |
+|-----------|-------------------|
+| `@deprecated` / `@deprecated_param` / `@hidden_param` | `breaking_version=` |
+| `@beta_param` / `@deprecated_param` / `@hidden_param` | `param=` |
+
+Use the decorators (not ad-hoc `preview_warning` / `deprecation_warning`) so docs banners and runtime warnings stay aligned. For internal call sites of an unstable API, use `emit_runtime_warning=False` with `subject=`.

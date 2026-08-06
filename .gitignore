@@ -169,7 +169,6 @@ pythonenv*/
 *.duckdb
 
 # Cursorrules
-.cursor
 
 # PyRight config
 pyrightconfig*

@@ -1,0 +1,15 @@
+---
+description: Where tests for public API and annotation changes must live
+globs: python_modules/**/*_tests/**/*.py,python_modules/dagster/dagster/**/*.py,python_modules/libraries/**/*.py,python_modules/dagster-pipes/**/*.py
+alwaysApply: false
+---
+
+# Public API tests
+
+Behavioral changes to a public API need tests under the package `*_tests/` tree:
+
+- Core: `python_modules/dagster/dagster_tests/` (mirror domain: e.g. decorators → `definitions_tests/decorators_tests/`)
+- Libraries: `python_modules/libraries/<pkg>/<pkg_underscore>_tests/`
+- Prefer `from dagster import …` (or the library root) when asserting user-facing behavior
+
+Annotation / lifecycle decorator mechanics: extend `dagster_tests/utils_tests/test_annotations.py` — do not add a parallel annotations test module.

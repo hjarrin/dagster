@@ -1,0 +1,18 @@
+---
+description: Sphinx RST and docstring requirements that fail the API docs build or dagster-docs checks
+globs: docs/sphinx/**/*.rst,python_modules/dagster/dagster/**/*.py,python_modules/libraries/**/*.py,python_modules/dagster-pipes/**/*.py
+alwaysApply: false
+---
+
+# Sphinx API docs
+
+New top-level `@public` classes/functions need an RST directive under `docs/sphinx/sections/` (`.. autoclass::` / `.. autofunction::` / `.. autodecorator::`) with the correct `.. currentmodule::`. Core: `api/dagster/`. Libraries: `integrations/libraries/`.
+
+`@public` methods/properties must have Google-style docstrings. Use `Args:`, never `Attributes:` (Sphinx build fails). Only `@public` members appear in class docs (except `dagster_pipes`).
+
+After changing exports, `@public`, docstrings, or RST:
+
+```bash
+dagster-docs check docstrings --changed
+dagster-docs check public-symbols --package <pkg>
+```
