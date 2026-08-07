@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """preToolUse: allow writes only under an allowed directory structure."""
 
-from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
@@ -25,9 +23,7 @@ WRITE_TOOLS = {
     "EditNotebook",
 }
 
-DENY_PREFIXES = (
-    "js_modules/",
-)
+DENY_PREFIXES = ("js_modules/",)
 
 
 def _normalize_rel(path: str, workspace_roots: list[str]) -> str:
@@ -77,8 +73,7 @@ def _is_allowed(rel: str) -> bool:
         allowed_lib_prefix = f"{libraries_root}{ALLOWED_LIBRARY}/"
         return rel.startswith(allowed_lib_prefix) or rel == f"{libraries_root}{ALLOWED_LIBRARY}"
     return any(
-        rel.startswith(prefix) or rel.rstrip("/") == prefix.rstrip("/")
-        for prefix in ALLOWLIST
+        rel.startswith(prefix) or rel.rstrip("/") == prefix.rstrip("/") for prefix in ALLOWLIST
     )
 
 
@@ -92,19 +87,21 @@ def _deny_message(attempted: str) -> str:
     )
 
 
+def _emit(payload: dict) -> None:
+    sys.stdout.write(json.dumps(payload) + "\n")
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
     except json.JSONDecodeError:
         # failClosed should block; emit deny-shaped output just in case.
-        print(
-            json.dumps(
-                {
-                    "permission": "deny",
-                    "user_message": "restrict-writes hook received invalid JSON.",
-                    "agent_message": "restrict-writes hook received invalid JSON.",
-                }
-            )
+        _emit(
+            {
+                "permission": "deny",
+                "user_message": "restrict-writes hook received invalid JSON.",
+                "agent_message": "restrict-writes hook received invalid JSON.",
+            }
         )
         return 2
 
@@ -114,7 +111,7 @@ def main() -> int:
         tool_input = {}
 
     if tool_name not in WRITE_TOOLS:
-        print(json.dumps({"permission": "allow"}))
+        _emit({"permission": "allow"})
         return 0
 
     workspace_roots = payload.get("workspace_roots") or []
@@ -130,14 +127,12 @@ def main() -> int:
             f"Write blocked: {tool_name} had no recognizable path. "
             f"Allowed write paths: {', '.join(ALLOWLIST)}."
         )
-        print(
-            json.dumps(
-                {
-                    "permission": "deny",
-                    "user_message": message,
-                    "agent_message": message,
-                }
-            )
+        _emit(
+            {
+                "permission": "deny",
+                "user_message": message,
+                "agent_message": message,
+            }
         )
         return 0
 
@@ -145,18 +140,16 @@ def main() -> int:
         rel = _normalize_rel(path, workspace_roots)
         if not _is_allowed(rel):
             message = _deny_message(rel or path)
-            print(
-                json.dumps(
-                    {
-                        "permission": "deny",
-                        "user_message": message,
-                        "agent_message": message,
-                    }
-                )
+            _emit(
+                {
+                    "permission": "deny",
+                    "user_message": message,
+                    "agent_message": message,
+                }
             )
             return 0
 
-    print(json.dumps({"permission": "allow"}))
+    _emit({"permission": "allow"})
     return 0
 
 
