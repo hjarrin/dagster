@@ -2,16 +2,18 @@
 name: first-contribution
 description: >-
   Guided first contribution for a Dagster public-API change. Takes an issue
-  description and runs Plan → Implement → Test → Verify → Dossier without
-  skipping ahead. Use when the user invokes /first-contribution or asks to
-  walk a first contribution through the public-API fan-out.
+  description and runs Plan → Implement → Test → Verify without skipping ahead.
+  Use when the user invokes /first-contribution or asks to walk a first
+  contribution through the public-API fan-out.
 ---
 
 # First contribution
 
 Input: the issue description (and any linked issue URL/number) supplied after `/first-contribution`.
 
-Run **exactly five phases in order**. Do not start a later phase until the current one is complete. After Plan, **stop and wait for explicit user approval** before Implement.
+Run **exactly four phases in order**. Do not start a later phase until the current one is complete. After Plan, **stop and wait for explicit user approval** before Implement.
+
+The skill ends after Phase 4. Do **not** write `docs/dossier/` or produce plan / test-plan / deploy-notes files — the cloud agent posts that content as a PR comment when the PR is opened.
 
 Read and obey these rules while working:
 
@@ -95,33 +97,10 @@ Write tests in the correct location per `.cursor/rules/public-api-tests.mdc`.
 
 6. **Never report success on a red suite.** If something is still failing, say what failed and stop.
 
----
-
-## Phase 5 — Dossier
-
-Write these three files (create `docs/dossier/` if needed):
-
-### `docs/dossier/plan.md` — for a PM
-
-- Scope
-- Behavior change
-- Breaking change? (yes/no + one-line why)
-- Rollback
-
-**No file paths.**
-
-### `docs/dossier/test-plan.md` — for QA
-
-- Coverage by tier (unit / integration / docs validators)
-- What a human must verify by hand
-
-### `docs/dossier/deploy-notes.md` — for DevOps and release
-
-- Public API surface added or changed
-- Stability level (`public` / `preview` / `beta` / `deprecated` / …)
-- Deprecation timeline (or N/A)
-- Docs rebuild required? (yes/no)
-- Breaking-change flag for the PR template (yes/no)
+7. When Phase 4 is green, output a **single completion summary** containing only:
+   - **Files changed** (paths only)
+   - **Test result** (pass count, command used)
+   - **Ruff and pyright status**
 
 ---
 
@@ -134,5 +113,4 @@ Copy and update as you go:
 - [ ] Phase 2 Implement
 - [ ] Phase 3 Test
 - [ ] Phase 4 Verify — green
-- [ ] Phase 5 Dossier
 ```
