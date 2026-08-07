@@ -1,4 +1,5 @@
 import os
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -103,6 +104,31 @@ class DagsterDbtTranslator:
             self._settings = DagsterDbtTranslatorSettings()
 
         return self._settings
+
+    @public
+    def get_manifest_version(self, manifest: Mapping[str, Any]) -> int | None:
+        """Return the dbt manifest schema version as an integer.
+
+        Reads ``metadata.dbt_schema_version`` from the given manifest (for example
+        ``https://schemas.getdbt.com/dbt/manifest/v12.json``) and returns the
+        integer schema version. Returns ``None`` if the field is missing or cannot
+        be parsed.
+
+        Args:
+            manifest (Mapping[str, Any]): The parsed manifest of the dbt project.
+
+        Returns:
+            Optional[int]: The manifest schema version, or ``None`` if unavailable.
+        """
+        dbt_schema_version = manifest.get("metadata", {}).get("dbt_schema_version")
+        if not isinstance(dbt_schema_version, str):
+            return None
+
+        match = re.search(r"/v(\d+)\.json(?:\?.*)?$", dbt_schema_version)
+        if not match:
+            return None
+
+        return int(match.group(1))
 
     def get_resource_props(self, manifest: Mapping[str, Any], unique_id: str) -> Mapping[str, Any]:
         """Given a parsed manifest and a dbt unique_id, returns the dictionary of properties
