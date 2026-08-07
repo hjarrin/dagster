@@ -93,8 +93,11 @@ Write tests in the correct location per `.cursor/rules/public-api-tests.mdc`.
 
    ```bash
    make ruff
-   make quick_pyright
+   make quick_ty
    ```
+
+Pre-existing failures: if `make ruff` fails on a file you did not write but that file is inside the hook allowlist, fix it in the same commit and include it in the files-changed summary.
+Do not revert and re-apply repeatedly. One fix, move on. If the failing file is outside the allowlist, report it and stop — do not touch it."
 
 3. Docs validators — **only if they exist as Makefile targets**. Before the demo / any docs-check step, run:
 
@@ -103,7 +106,7 @@ Write tests in the correct location per `.cursor/rules/public-api-tests.mdc`.
    ```
 
    - If matches exist: run the corresponding `make` / `dagster-docs check …` targets for exports, `@public`, docstrings, or RST changes.
-   - If **no matches** (current repo): do **not** invoke `dagster-docs` directly. Rely on `make ruff` and `make quick_pyright` from step 2 only.
+   - If **no matches** (current repo): do **not** invoke `dagster-docs` directly. Rely on `make ruff` and `make quick_ty` from step 2 only.
 
 4. On any failure: fix, then re-run the failing command. Repeat until green.
 
