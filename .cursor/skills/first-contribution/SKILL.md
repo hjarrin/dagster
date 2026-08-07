@@ -41,7 +41,27 @@ Read and obey these rules while working:
 
 ## Phase 2 — Implement
 
-Apply changes in this reviewer-expected order (skip a step only if Plan marked it N/A):
+**Before touching any files**, derive a branch name from the issue description and create it.
+
+Format: `feat/<library>-<short-kebab-case-description>`
+
+Example: for "add retry_delay property to RetryPolicy in dagster-core" → `feat/dagster-retry-delay-property`
+
+Then run:
+
+```bash
+git checkout -b <derived-branch-name>
+```
+
+If the command fails because the branch already exists locally, **stop** and tell the user:
+
+> Branch `<name>` already exists locally. Run `git branch -D <name>` and then re-invoke the skill.
+
+Do **not** delete or recreate the branch automatically.
+
+State the derived branch name clearly at the **top** of the Phase 2 output so the user can use it in `git push` and the PR URL later.
+
+Then apply changes in this reviewer-expected order (skip a step only if Plan marked it N/A):
 
 1. **Private implementation** — code under `dagster._…` / library internals
 2. **Public export** — root `from …defining_module… import X as X` when adding a top-level symbol
