@@ -29,6 +29,11 @@ If the file defines any symbol decorated with `@public`, verify each appears in 
 
 Flag any `@public` symbols that are missing from the root export. (New `@public` methods/properties on an already-exported class do not need a new root export — only flag top-level classes/functions that should be re-exported.)
 
+Distinction to the BLOCKER criteria:
+
+- BLOCKER: a NEW top-level symbol being added is exported but missing @public
+- WARNING: an EXISTING class that is already root-exported, documented, and has been public for multiple releases is missing @public on the definition
+
 ## 5. Check tests
 
 If the file is an **implementation** module (not already under a `*_tests/` tree), confirm a corresponding test file exists in the matching `*_tests/` tree per `.cursor/rules/public-api-tests.mdc`.
