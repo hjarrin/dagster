@@ -12,4 +12,6 @@ Behavioral changes to a public API need tests under the package `*_tests/` tree:
 - Libraries: `python_modules/libraries/<pkg>/<pkg_underscore>_tests/`
 - Prefer `from dagster import …` (or the library root) when asserting user-facing behavior
 
+Sub-tier placement is a judgment call, not a blocker. Behavioral tests for a library's core domain should be co-located with their domain siblings (for dagster-dbt: `dagster_dbt_tests/core/`). A behavioral test placed loose at the `<pkg>_tests/` root is a WARNING a reviewer would likely ask to relocate, not a rejection.
+
 Annotation / lifecycle decorator mechanics: extend `dagster_tests/utils_tests/test_annotations.py` — do not add a parallel annotations test module.
