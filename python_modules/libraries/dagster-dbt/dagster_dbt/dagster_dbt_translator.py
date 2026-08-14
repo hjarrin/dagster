@@ -104,6 +104,7 @@ class DagsterDbtTranslator:
 
         return self._settings
 
+    @public
     def get_manifest_version(self, manifest: Mapping[str, Any]) -> int | None:
         metadata = manifest.get("metadata") or {}
         schema_version = metadata.get("dbt_schema_version")
