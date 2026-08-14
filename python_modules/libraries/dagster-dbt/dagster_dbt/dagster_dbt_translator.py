@@ -104,6 +104,14 @@ class DagsterDbtTranslator:
 
         return self._settings
 
+    def get_manifest_version(self, manifest: Mapping[str, Any]) -> int | None:
+        metadata = manifest.get("metadata") or {}
+        schema_version = metadata.get("dbt_schema_version")
+        if schema_version is None:
+            return None
+        version_str = schema_version.split("/")[-1].replace(".json", "").replace("v", "")
+        return int(version_str)
+
     def get_resource_props(self, manifest: Mapping[str, Any], unique_id: str) -> Mapping[str, Any]:
         """Given a parsed manifest and a dbt unique_id, returns the dictionary of properties
         for the corresponding dbt resource (e.g. model, seed, snapshot, source) as defined
