@@ -33,6 +33,7 @@ Read and obey these rules while working:
    - stability / lifecycle annotation (`@preview` / `@beta` / `@deprecated` / …)
    - Sphinx rST entry under `docs/sphinx/sections/`
    - behavioral tests under the matching `*_tests/` tree
+   - exact test file path **including sub-tier** (e.g. `dagster_dbt_tests/core/test_….py`, not the `*_tests/` root) — decide placement at plan time so it is visible for approval, not improvised during implementation
 2. List **every file** you will create or edit, in the order you will touch them.
 3. Call out whether this is a new top-level symbol vs a new `@public` member on an existing public class (different fan-out).
 4. **Stop.** Ask for approval. Do not edit files until the user approves the plan.
@@ -66,7 +67,8 @@ Then apply changes in this reviewer-expected order (skip a step only if Plan mar
 1. **Private implementation** — code under `dagster._…` / library internals
 2. **Public export** — root `from …defining_module… import X as X` when adding a top-level symbol
 3. **Stability annotation** — `@public` plus any `@preview` / `@beta` / `@deprecated(breaking_version=…)` / param variants from `dagster._annotations`
-4. **Docs rST entry** — matching `.. autoclass::` / `.. autofunction::` / `.. autodecorator::` with correct `.. currentmodule::`
+4. **Docstring** — for any new `@public` member, add a Google-style docstring with an `Args:` section (never `Attributes:`) matching sibling `@public` members. `sphinx-api-docs.mdc` treats a `@public` member without a docstring as a blocker. The docstring is required in the **same edit** that adds `@public`, not deferred to the docs / rST step.
+5. **Docs rST entry** — matching `.. autoclass::` / `.. autofunction::` / `.. autodecorator::` with correct `.. currentmodule::`
 
 Do not invent exports “just in case.” Do not grow `exclude_lists.py`.
 
@@ -76,7 +78,7 @@ Do not invent exports “just in case.” Do not grow `exclude_lists.py`.
 
 Write tests in the correct location per `.cursor/rules/public-api-tests.mdc`.
 
-- Behavioral API tests: package `*_tests/` tree; import the public path when asserting user-facing behavior.
+- Behavioral API tests: place them not just under the package `*_tests/` tree but in the **domain-matching sub-tier** with their siblings. For a dagster-dbt core-domain symbol such as a `DagsterDbtTranslator` member, that is `dagster_dbt_tests/core/`, not the `dagster_dbt_tests/` root. A behavioral test placed loose at the tests-tree root is a `public-api-tests` test-location **warning**. Before choosing the path, confirm sibling placement (e.g. `ls` the candidate directory). Import the public path when asserting user-facing behavior.
 - Annotation mechanics only: extend `dagster_tests/utils_tests/test_annotations.py`.
 
 ---
